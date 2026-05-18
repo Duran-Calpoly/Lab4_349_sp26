@@ -9,8 +9,12 @@ using namespace std;
 void test_vertex_cover_predicate() {
     Graph G = make_path_graph(4);
 
+    // Path: 0 -- 1 -- 2 -- 3
+    // {1, 2} covers all edges.
     assert(is_vertex_cover(G, {1, 2}));
-    assert(!is_vertex_cover(G, {0, 2}));
+
+    // {0, 3} does not cover edge (1, 2).
+    assert(!is_vertex_cover(G, {0, 3}));
 }
 
 void test_matching_predicate() {
@@ -23,11 +27,18 @@ void test_matching_predicate() {
     assert(!is_matching(G, invalid_matching));
 }
 
-void test_vertex_cover_predicate() {
+void test_maximal_matching_predicate() {
     Graph G = make_path_graph(4);
 
-    assert(is_vertex_cover(G, {1, 2}));
-    assert(!is_vertex_cover(G, {0, 3}));
+    // Path: 0 -- 1 -- 2 -- 3
+    // This uses every vertex, so no more edge can be added.
+    vector<pair<int, int>> maximal = {{0, 1}, {2, 3}};
+
+    // This leaves edge (2, 3) addable, so it is not maximal.
+    vector<pair<int, int>> not_maximal = {{0, 1}};
+
+    assert(is_maximal_matching(G, maximal));
+    assert(!is_maximal_matching(G, not_maximal));
 }
 
 void test_exact_vertex_cover_path() {
@@ -76,6 +87,7 @@ void test_approx_ratio_at_most_two_on_examples() {
         assert(is_vertex_cover(G, exact.cover));
         assert(is_vertex_cover(G, approx.cover));
 
+        assert(!exact.cover.empty() || G.edge_count() == 0);
         assert(approx.cover.size() <= 2 * exact.cover.size());
     }
 }
